@@ -25,21 +25,40 @@ module.exports = () => {
       }),
       new InjectManifest({
         swSrc: './src-sw.js',
-        swDest: 'service-worker.js',
+        swDest: 'src-sx.js',
       }),
       new WebpackPwaManifest({
-        name: 'Your App Name',
-        short_name: 'AppShortName',
-        description: 'Your App Description',
-        background_color: '#ffffff',
-        crossorigin: 'use-credentials',
+        // Fingerprints are used to cache bust the service worker.
+        fingerprints: false,
+        // Inject is set to true to inject the manifest into the html file.
+        inject: true,
+        // This is the manifest file name.
+        name: "Just Another Text Editor",
+        // This is the short name of the app.
+        short_name: "JATE",
+        // This is the description of the app.
+        description: "A simple text editor",
+        background_color: "#01579B",
+        theme_color: "#01579B",
+        // This is the start url of the app.
+        start_url: "/",
+        // This is the display mode of the app.
+        publicPath: "./",
+        display: "standalone",
         icons: [
           {
-            src: path.resolve('src/assets/icon.png'),
-            sizes: [96, 128, 192, 256, 384, 512]
-          }
-        ]
-      })
+            src: path.resolve("./src/images/logo.png"),
+            sizes: [96, 128, 192, 256, 384, 512],
+            destination: path.join("assets", "icons"),
+          },
+          {
+            src: path.resolve("./favicon.ico"),
+            size: [48, 72, 96],
+            destination: path.join("assets", "icons"),
+            type: "image/ico",
+          },
+        ],
+      }),
     ],
     module: {
       rules: [
@@ -48,12 +67,13 @@ module.exports = () => {
           use: ['style-loader', 'css-loader']
         },
         {
-          test: /\.js$/,
+          test: /\.m?js$/,
           exclude: /node_modules/,
           use: {
             loader: 'babel-loader',
             options: {
-              presets: ['@babel/preset-env']
+              presets: ['@babel/preset-env'],
+              plugins: ["@babel/plugin-transform-runtime", "@babel/plugin-proposal-object-rest-spread"],
             }
           }
         }
